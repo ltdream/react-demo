@@ -1,13 +1,3 @@
-<<<<<<< HEAD
-import React from 'react'
-export default class Login extends React.Component{
-    render(){
-        return (
-            <div></div>
-        )
-    }
-}
-=======
 import React, { Component } from 'react';
 
 class Login extends Component{
@@ -19,4 +9,3 @@ class Login extends Component{
 }
 
 export default Login;
->>>>>>> 821af7ec7b8298f702d5bcf64e50808fc9a02430

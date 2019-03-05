@@ -1,13 +1,3 @@
-<<<<<<< HEAD
-import React from 'react'
-export default class NoMatch extends React.Component{
-    render(){
-        return (
-            <div style={{textAlign:'center',fontSize:'24'}}>404 not found</div>
-        )
-    }
-}
-=======
 import React, { Component } from 'react';
 
 export default class  extends Component{
@@ -18,4 +8,3 @@ export default class  extends Component{
   }
 }
 
->>>>>>> 821af7ec7b8298f702d5bcf64e50808fc9a02430
