@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { Button, Card, Radio } from 'antd';
 import './ui.less'
+import { Icon } from 'antd';
 
 export default class Buttons extends Component{
   state={
@@ -28,7 +29,7 @@ export default class Buttons extends Component{
           <Button disabled>Imooc</Button>
         </Card>
         <Card title="图形按钮" className="card-wrap">
-          <Button icon="plus">创建</Button>
+          <Button><Icon type="plus"/>创建</Button>
           <Button icon="edit">编辑</Button>
           <Button icon="delete">删除</Button>
           <Button type="primary" shape="circle" icon="search"></Button>
@@ -41,7 +42,7 @@ export default class Buttons extends Component{
           <Button shape="circle" loading={true}></Button>
           <Button type="primary" onClick={this.handleCloseLoading.bind(this)}>关闭</Button>
         </Card>
-        <Card title="按钮组">
+        <Card title="按钮组" style={{marginBottom:10}}>
           <Button.Group>
             <Button type="primary" icon="left">前进</Button>
             <Button type="primary" icon="right">返回</Button>
