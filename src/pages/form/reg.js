@@ -1,12 +1,53 @@
 import React from 'react';
 import {Card, Button, InputNumber, Form, Input, Checkbox, Radio, Select, Switch, DatePicker, TimePicker, Upload, Icon, message} from 'antd'
+import moment from 'moment';
 
 const FormItem = Form.Item
 const RadioGroup = Radio.Group
-const { Option } = Select;
+const { Option } = Select
+const { TextArea } = Input
 
 class FormReg extends React.Component{
-    
+    state = {
+        imageUrl: '',
+        loading: false
+    }
+    handleChange(info){
+        console.log(info)
+        if(info.file.status === 'uploading'){
+            this.setState({loading: true})
+            return
+        }
+        if(info.file.status === 'done'){
+            this.getBase64(info.file.originFileObj, imageUrl => this.setState({
+                imageUrl,
+                loading: false
+            }))
+        }
+    }
+    beforeUpload(file) {
+        const isJPG = file.type === 'image/jpeg';
+        if (!isJPG) {
+          message.error('You can only upload JPG file!');
+        }
+        const isLt2M = file.size / 1024 / 1024 < 2;
+        if (!isLt2M) {
+          message.error('Image must smaller than 2MB!');
+        }
+        return isJPG && isLt2M;
+      }
+    getBase64 = (img, callback) => {
+        const reader = new FileReader()
+        reader.addEventListener('load',()=>callback(reader.result))
+        reader.readAsDataURL(img)
+    }
+    handleSubmit(){
+        let info = this.props.form.getFieldsValue()
+        console.log(info)
+        info = JSON.stringify(info)
+        message.success(`${info.username} 恭喜你，注册成功`)
+    }
+
     render (){
         const {getFieldDecorator} = this.props.form
         const formItemLayout = {
@@ -16,7 +57,19 @@ class FormReg extends React.Component{
             },
             wrapperCol:{
                 xs: 24,
-                sm: 20
+                sm: 12
+            }
+        }
+        const rowObject = {
+            minRows: 4, maxRows: 6
+        }
+        const offsetLayout = {
+            wrapperCol: {
+                xs: 24,
+                sm: {
+                    span: 12,
+                    offset: 4
+                }
             }
         }
         return (
@@ -94,6 +147,70 @@ class FormReg extends React.Component{
                                         <Option value="1">咸鱼</Option>
                                         <Option value="2">辣椒</Option>
                                     </Select>
+                                )
+                            }
+                        </FormItem>
+                        <FormItem {...formItemLayout} label="是否已婚">
+                            {
+                                getFieldDecorator('isMarried',{
+                                    valuePropName: 'checked',
+                                    initialValue: false
+                                })(
+                                    <Switch />
+                                )
+                            }
+                        </FormItem>
+                        <FormItem {...formItemLayout} label="生日">
+                            {
+                                getFieldDecorator('birth',{
+                                    initialValue: moment('2018-08-08')
+                                })(
+                                    <DatePicker showTime format="YYYY-MM-DD" />
+                                )
+                            }
+                        </FormItem>
+                        <FormItem {...formItemLayout} label="联系地址">
+                            {
+                                getFieldDecorator('address',{
+                                    initialValue: '广东省 深圳市 南山区'
+                                })(
+                                    <TextArea autosize={ rowObject }/>
+                                )
+                            }
+                        </FormItem>
+                        <FormItem {...formItemLayout} label="早期时间">
+                            {
+                                getFieldDecorator('time')(
+                                    <TimePicker/>
+                                )
+                            }
+                        </FormItem>
+                        <FormItem {...formItemLayout} label="头像">
+                            {
+                                getFieldDecorator('avatar')(
+                                    <Upload 
+                                        listType="picture-card"
+                                        showUploadList={false}
+                                        onChange={this.handleChange.bind(this)}
+                                    >
+                                        {this.state.imageUrl?<img src={this.state.imageUrl} />:<Icon type={this.state.loading?'loading': 'plus'} />}
+                                    </Upload>
+                                )
+                            }
+                        </FormItem>
+                        <FormItem {...offsetLayout}>
+                            {
+                                getFieldDecorator('aggree')(
+                                    <Checkbox>
+                                        我已阅读过<a href="#">协议</a>
+                                    </Checkbox>
+                                )
+                            }
+                        </FormItem>
+                        <FormItem {...offsetLayout}>
+                            {
+                                getFieldDecorator('submit')(
+                                    <Button type="primary" onClick={this.handleSubmit.bind(this)}>注册</Button>
                                 )
                             }
                         </FormItem>
