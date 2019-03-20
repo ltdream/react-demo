@@ -20,6 +20,9 @@ export default class Basic extends React.Component{
                 address:'广州省深圳市',
             }
         ]
+        dataSource.map((item,index) => {
+             item.key = index
+        })
         this.setState({
             dataSource
         })
@@ -86,7 +89,7 @@ export default class Basic extends React.Component{
             dataIndex: 'address'
         }]
         let rowSelection = {
-            
+
         }
         return (
             <div>
