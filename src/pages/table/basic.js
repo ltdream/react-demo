@@ -1,5 +1,5 @@
 import React from 'react'
-import {Card, Table} from 'antd'
+import {Card, Table, Modal} from 'antd'
 // import axios from 'axios';
 import axios from '../../axios'
 export default class Basic extends React.Component{
@@ -12,6 +12,7 @@ export default class Basic extends React.Component{
         const dataSource = [
             {
                 id:'0',
+                key:1,
                 username: 'jack',
                 sex: '1',
                 status: '1',
@@ -48,12 +49,24 @@ export default class Basic extends React.Component{
             }
         }).then((res)=>{
             if(res.code === 0){
+                // 消除控制台红色警告
+                res.result.map((item,index)=>{
+                    item.key = index
+                })
                 this.setState({
                     dataSource2: res.result
                 })
             }
         })
     }
+    onRowClick = (record,index) => {
+        let selectKey = [index]
+        this.setState({
+            selectedRowKeys: selectKey,
+            selectedItem: record
+        })
+    }
+    
     render (){
         const colums = [{
             title: 'id',
@@ -88,9 +101,11 @@ export default class Basic extends React.Component{
             title: '地址',
             dataIndex: 'address'
         }]
-        let rowSelection = {
-
+        const rowSelection = {
+            type: 'radio',
+            selectedRowKeys:this.state.selectedRowKeys
         }
+       
         return (
             <div>
                 <Card title="基础表格" className="card-wrap">
@@ -101,7 +116,7 @@ export default class Basic extends React.Component{
                         pagination={false}        
                     />
                 </Card>
-                <Card title="动态数据表格" style={{margin:'10px 0'}}>
+                <Card title="动态数据渲染表格--Mock" style={{margin:'10px 0'}}>
                     <Table
                         columns={colums}
                         dataSource={this.state.dataSource2}
@@ -113,9 +128,32 @@ export default class Basic extends React.Component{
                     <Table
                         columns={colums}
                         rowSelection={rowSelection}
-                        dataSource={this.state.dataSource3}
+                        dataSource={this.state.dataSource2}
                         bordered
-                        pagination={false}        
+                        pagination={false}   
+                        onRow={(record,index)=>{
+                            return {
+                                onClick: () =>{
+                                    this.onRowClick(record,index)
+                                }
+                            }
+                        }}
+                    />
+                </Card>
+                <Card title="Mock-复选" style={{margin:'10px 0'}}>
+                    <Table
+                        columns={colums}
+                        rowSelection={rowChexkSelection}
+                        dataSource={this.state.dataSource2}
+                        bordered
+                        pagination={false}   
+                        onRow={(record,index)=>{
+                            return {
+                                onClick: () =>{
+                                    this.onRowClick(record,index)
+                                }
+                            }
+                        }}
                     />
                 </Card>
             </div>
