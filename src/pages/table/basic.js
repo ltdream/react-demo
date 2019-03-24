@@ -1,12 +1,17 @@
 import React from 'react'
-import {Card, Table, Modal} from 'antd'
+import {Card, Table, Modal,Button} from 'antd'
 // import axios from 'axios';
 import axios from '../../axios'
+import { message } from 'antd';
+import utils from '../../utils/utils';
 export default class Basic extends React.Component{
     state = {
         dataSource:[],
         dataSource2:[],
         dataSource3:[]
+    }
+    params = {
+        page:1
     }
     componentDidMount(){
         const dataSource = [
@@ -30,6 +35,7 @@ export default class Basic extends React.Component{
         this.request()
     }
     request = ()=>{
+        let _this = this
         // let baseUrl = 'https://www.easy-mock.com/mock/5c905559a4c09335165f464d/mockapi'
         // axios.get(baseUrl + '/table/list').then((res)=>{
         //     if(res.status === 200 && res.data.code === 0){
@@ -43,18 +49,22 @@ export default class Basic extends React.Component{
             url:'/table/list',
             data:{
                 params:{
-                    page:1,
+                    page:this.params.page,
                 },
                 isShowLoading: true
             }
         }).then((res)=>{
             if(res.code === 0){
                 // 消除控制台红色警告
-                res.result.map((item,index)=>{
+                res.result.list.map((item,index)=>{
                     item.key = index
                 })
                 this.setState({
-                    dataSource2: res.result
+                    dataSource2: res.result.list,
+                    pagination: utils.pagination(res,(current)=>{
+                        _this.params.page = current
+                        this.request()
+                    })
                 })
             }
         })
@@ -64,6 +74,21 @@ export default class Basic extends React.Component{
         this.setState({
             selectedRowKeys: selectKey,
             selectedItem: record
+        })
+    }
+
+    handleDelete(){
+        let rows = this.state.selectedRows
+        let ids = []
+        rows.map((item)=>{
+            ids.push(item.id)
+        })
+        Modal.confirm({
+            title:'删除提示',
+            content:`您确定要删除这些数据吗?${ids.join(',')}`,
+            onOk:()=>{
+                message.success('删除成功')
+            }
         })
     }
     
@@ -105,7 +130,20 @@ export default class Basic extends React.Component{
             type: 'radio',
             selectedRowKeys:this.state.selectedRowKeys
         }
-       
+        const rowChexkSelection = {
+            type: 'checkbox',
+            selectedRowKeys:this.state.selectedRowKeys,
+            onChange: (selectedRowKeys,selectedRows) => {
+                // let ids = []
+                // selectedRows.map((item)=>{
+                //     ids.push(item.id)
+                // })
+                this.setState({
+                    selectedRowKeys,
+                    selectedRows
+                })
+            }
+        }
         return (
             <div>
                 <Card title="基础表格" className="card-wrap">
@@ -141,19 +179,23 @@ export default class Basic extends React.Component{
                     />
                 </Card>
                 <Card title="Mock-复选" style={{margin:'10px 0'}}>
+                    <div style={{marginBottom:'10px'}}>
+                        <Button onClick={this.handleDelete.bind(this)}>删除</Button>
+                    </div>
                     <Table
                         columns={colums}
                         rowSelection={rowChexkSelection}
                         dataSource={this.state.dataSource2}
                         bordered
                         pagination={false}   
-                        onRow={(record,index)=>{
-                            return {
-                                onClick: () =>{
-                                    this.onRowClick(record,index)
-                                }
-                            }
-                        }}
+                    />
+                </Card>
+                <Card title="Mock-表格分页" style={{margin:'10px 0'}}>
+                    <Table
+                        columns={colums}
+                        dataSource={this.state.dataSource2}
+                        bordered
+                        pagination={this.state.pagination}   
                     />
                 </Card>
             </div>
